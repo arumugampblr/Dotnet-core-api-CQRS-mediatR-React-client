@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Persistence;
+using Domain;
+using Microsoft.AspNetCore.Identity;
 
 namespace API
 {
@@ -22,10 +24,11 @@ namespace API
 
             var logger = services.GetRequiredService<ILogger<Program>>();
             try{
-                var context = services.GetRequiredService<DataContext>();                
+                var context = services.GetRequiredService<DataContext>();   
+                var userManager = services.GetRequiredService<UserManager<AppUser>>();            
                 await context.Database.MigrateAsync();
-                await Seed.SeedData(context);
-                logger.LogInformation("database created");
+                await Seed.SeedData(context, userManager);
+//                logger.LogInformation("database created");
             } catch(Exception ex) {
                 logger.LogError(ex,"An error occured during migration");
             }
